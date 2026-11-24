@@ -108,6 +108,14 @@ update public.profiles set role = 'student' where email = 'alamat-anggota@exampl
 
 Perubahan peran akan terlihat saat akses berikutnya diperiksa ke server.
 
+**Membuat admin pertama tanpa menunggu email konfirmasi:** buka **Authentication → Users → Add user**, isi email dan kata sandi, lalu centang **Auto Confirm User**. Akun langsung aktif walau SMTP belum diisi. Setelah itu promosikan lewat SQL Editor:
+
+```sql
+update public.profiles set role = 'admin' where email = 'alamat-pengelola@example.com';
+```
+
+Akun dengan `role = 'admin'` mendapat semua alat dan tautan **Kelola materi**; tautan itu tetap hanya tampil setelah server mengonfirmasi peran, dan halaman admin tetap menolak akses di sisi RLS.
+
 ### Mengatur URL Auth, konfirmasi email, dan SMTP
 
 Halaman `login.html` mengirim `emailRedirectTo` ke `/login.html` pada origin yang sedang dibuka. Supabase hanya mau mengarahkan ke origin yang terdaftar:
@@ -117,7 +125,29 @@ Halaman `login.html` mengirim `emailRedirectTo` ke `/login.html` pada origin yan
 3. **Redirect URLs**: tambahkan `https://simple-yn.pages.dev/login.html`. Tambahkan juga URL preview `https://<hash>.simple-yn.pages.dev/login.html` bila preview dipakai untuk uji coba.
 4. Buka **Authentication → Providers → Email**: aktifkan **Confirm email** dan tetapkan **minimum password length 12** agar sama dengan aturan di `auth.js` (12–72 karakter).
 
-**Konfirmasi email wajib punya SMTP sendiri sebelum rilis.** Server email bawaan Supabase hanya untuk uji coba dan sangat cepat kena limit: saat pengujian, email konfirmasi ketiga ditolak dengan `429 too many requests`, sehingga pendaftaran pengguna baru akan gagal. Isi **Authentication → SMTP Settings** dengan penyedia email sebelum mengumumkan situs.
+**Konfirmasi email wajib punya SMTP sendiri sebelum rilis. Ini bukan sekadar soal limit.** Tanpa SMTP kustom, Supabase hanya mau mengirim ke alamat yang terdaftar sebagai anggota tim organisasi; alamat pengguna lain ditolak dengan pesan *Email address not authorized*. Batasnya juga hanya **2 email per jam**, dan saat pengujian email konfirmasi ketiga memang ditolak `429 too many requests`. Artinya pendaftaran mahasiswa lain akan gagal total sebelum SMTP diisi.
+
+Isi di **Authentication → SMTP Settings** (`/project/_/auth/smtp`):
+
+| Kolom | Isi |
+|---|---|
+| Enable Custom SMTP | aktif |
+| Sender email | alamat pengirim yang **sudah diverifikasi** di penyedia, mis. `simpleyn@gmail.com` |
+| Sender name | `Simple.yn` |
+| Host | host SMTP penyedia, mis. `smtp-relay.brevo.com` |
+| Port | `587` (STARTTLS) atau `465` (TLS) |
+| Username | login SMTP dari halaman SMTP penyedia, bukan selalu email akun |
+| Password | SMTP key / app password, bukan kata sandi akun |
+
+Pilihan penyedia untuk proyek tanpa domain sendiri:
+
+- **Brevo** — gratis 300 email/hari, cukup verifikasi satu alamat pengirim (tidak perlu domain). Host `smtp-relay.brevo.com`, port `587`. Paling cocok untuk jangka panjang.
+- **Gmail SMTP** — host `smtp.gmail.com`, port `587`, password harus **App Password 16 karakter** (wajib aktifkan verifikasi 2 langkah), bukan kata sandi Gmail biasa. Paling cepat, tapi rawan diblokir Google dan kurang rapi untuk produk.
+- **Resend / ZeptoMail / SendGrid** — butuh domain terverifikasi beserta DKIM/SPF/DMARC. Pakai ini kalau nanti sudah punya domain, karena deliverability-nya jauh lebih baik daripada pengirim Gmail/Brevo tanpa domain.
+
+Setelah tersimpan, naikkan **Authentication → Rate Limits → Emails sent by Supabase Auth** (default 30 per jam) sesuai kebutuhan. Jangan mematikan **Confirm email** untuk menembus limit: itu membuka pendaftaran palsu oleh bot dan merusak reputasi domain pengirim.
+
+Uji dengan alamat email sungguhan di luar tim: daftar di `https://simple-yn.pages.dev/login.html`, pastikan email masuk (periksa folder spam), klik tautannya, dan pastikan mendarat di halaman login situs, bukan `localhost`.
 
 Perlindungan kata sandi bocor (*leaked password protection*) hanya tersedia pada paket berbayar Supabase. Selama proyek memakai paket gratis, fitur itu tetap nonaktif; ini keputusan pemilik proyek, bukan kelalaian konfigurasi.
 
