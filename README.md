@@ -130,7 +130,7 @@ Untuk nomor WhatsApp dan jalur pembayaran, edit `site/js/config.js`. Satu-satuny
 
 ## Hosting: GitHub → Cloudflare Pages
 
-Repo GitHub: `bannaalkhairriyanto/simpleyn` (privat). Cloudflare Pages terhubung ke repo itu sehingga setiap push ke `main` otomatis deploy.
+Repo GitHub: `bannaalkhairriyanto/simple.yn` (publik). Cloudflare Pages terhubung ke repo itu sehingga setiap push ke `main` otomatis deploy.
 
 1. Di Cloudflare Dashboard, buka **Workers & Pages → Create → Pages → Connect to Git**, lalu pilih repo.
 2. Isi pengaturan build:
@@ -142,6 +142,9 @@ Repo GitHub: `bannaalkhairriyanto/simpleyn` (privat). Cloudflare Pages terhubung
 4. Setiap push ke `main` memicu deploy produksi; pull request mendapat preview URL.
 5. `site/_headers` dibaca apa adanya oleh Cloudflare Pages. Jangan menghapus CSP/HSTS dari berkas itu atau memindahkannya hanya ke dashboard.
 6. Build command menjalankan tes keamanan; jika tes gagal, deploy dibatalkan. Alur yang sama juga berjalan di GitHub Actions (`.github/workflows/ci.yml`).
+7. Repo bersifat **publik**, jadi jangan pernah commit `.env`, token, atau `service_role`. Publishable key di `site/js/config.js` memang untuk publik; pengamanan sebenarnya ada pada RLS dan fungsi server-side.
+
+Setelah deploy, buka URL `*.pages.dev` lalu periksa header `content-security-policy` dan `strict-transport-security` di tab Network agar yakin `_headers` benar-benar diterapkan.
 
 - `site/login.html` harus dapat diakses oleh pendaftar/login.
 - Cloudflare Access pada `/app/*` boleh dipakai sebagai **lapisan tambahan** untuk kelompok kelas, tetapi bukan dasar pemeriksaan pembayaran. Cakupannya tidak boleh menghalangi calon pengguna yang perlu mendaftar; selesaikan alur Access lalu auth Supabase.
