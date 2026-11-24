@@ -54,6 +54,7 @@ Simple.yn is a static site (plain HTML/CSS/vanilla JS, no build step) backed by 
 - Build dynamic nodes with `SY.el`/`textContent` + `append` from `site/js/util.js`.
 - Any new external origin breaks CSP and the test allowlist. Update **both** `site/_headers` and the `allowed` set in `tests/security.test.mjs`.
 - Gated pages start with `<html data-gate="pending">`; `auth.js` flips it to `open`/`blocked`, and CSS hides `.shell` until open. Every `/app/*` page must call `requireAccess({ tool })` or `requireAccess({ admin: true })` before rendering protected UI.
+- Admin-only navigation links carry `data-admin-only` and default to `hidden`; `auth.js` reveals them only after `get_access` returns `role: 'admin'`. Hiding them is cosmetic, never the control.
 - Money Tracker and Study Planner data stays in `localStorage` under `simpleyn.<tool>.v1.<user-uuid>`. Never sync it to Supabase.
 - Google Fonts (Fraunces + DM Sans) is an intentional design choice. Do not replace it for generic "font best practice" reasons.
 

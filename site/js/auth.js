@@ -77,6 +77,9 @@
       if (result.error || !result.data || !result.data.tools) throw new Error('Hak akses belum dapat dibaca dari server. Coba muat ulang halaman.');
       const access = result.data;
       setGate('open');
+      document.querySelectorAll('[data-admin-only]').forEach(function (node) {
+        node.hidden = access.role !== 'admin';
+      });
       if (options.admin && access.role !== 'admin') {
         accessError('Halaman khusus admin', 'Akunmu masuk sebagai mahasiswa. Hanya akun dengan peran admin di database yang dapat mengelola materi dan pembayaran.');
         return null;

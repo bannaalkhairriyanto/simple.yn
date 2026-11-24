@@ -121,6 +121,21 @@ test('gated pages start closed so nothing renders before auth resolves', () => {
   }
 });
 
+test('admin navigation stays hidden until the server confirms the admin role', () => {
+  const appPages = htmlFiles.filter((path) => path.startsWith(join(site, 'app')));
+  for (const path of appPages) {
+    const html = readFileSync(path, 'utf8');
+    const links = [...html.matchAll(/<a\b[^>]*href="\/app\/admin\.html"[^>]*>/g)].map((match) => match[0]);
+    if (!html.includes('class="side-nav"')) continue;
+    assert.ok(links.length > 0, `${path.slice(root.length + 1)} lost the admin link`);
+    for (const tag of links) {
+      assert.match(tag, /\bdata-admin-only\b/, path);
+      assert.match(tag, /\bhidden\b/, `${path.slice(root.length + 1)} admin link must default to hidden`);
+    }
+  }
+  assert.match(readFileSync(join(site, 'js', 'auth.js'), 'utf8'), /querySelectorAll\('\[data-admin-only\]'\)/);
+});
+
 test('config.js and the CSP agree on one Supabase origin and no secret key', () => {
   const config = readFileSync(join(site, 'js', 'config.js'), 'utf8');
   const url = config.match(/supabaseUrl:\s*'([^']+)'/);
@@ -132,6 +147,8 @@ test('config.js and the CSP agree on one Supabase origin and no secret key', () 
   assert.ok(connect, 'connect-src missing from _headers');
   assert.ok(connect[1].includes(origin), `connect-src does not allow ${origin}`);
   assert.match(headers, /strict-transport-security:\s*max-age=\d+/i);
+  assert.match(headers, /\/js\/\*[\s\S]*?cache-control:\s*[^\n]*must-revalidate/i);
+  assert.match(headers, /\/css\/\*[\s\S]*?cache-control:\s*[^\n]*must-revalidate/i);
   assert.doesNotMatch(config, /service_role|sb_secret_/);
 });
 

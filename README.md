@@ -167,7 +167,7 @@ Repo GitHub: `bannaalkhairriyanto/simple.yn` (publik). Cloudflare Pages terhubun
    - **Build output directory**: `site`
 3. Simpan. Cloudflare Pages hanya menerbitkan isi `site/`; `supabase/`, `examples/`, dokumentasi, dan backup tidak ikut terpublikasi.
 4. Setiap push ke `main` memicu deploy produksi; pull request mendapat preview URL.
-5. `site/_headers` dibaca apa adanya oleh Cloudflare Pages. Jangan menghapus CSP/HSTS dari berkas itu atau memindahkannya hanya ke dashboard.
+5. `site/_headers` dibaca apa adanya oleh Cloudflare Pages. Jangan menghapus CSP/HSTS dari berkas itu atau memindahkannya hanya ke dashboard. Berkas itu juga menetapkan `Cache-Control: max-age=0, must-revalidate` untuk `/js/*` dan `/css/*` agar perubahan skrip langsung terpakai setelah deploy, bukan tertahan cache browser.
 6. Build command menjalankan tes keamanan; jika tes gagal, deploy dibatalkan. Alur yang sama juga berjalan di GitHub Actions (`.github/workflows/ci.yml`).
 7. Repo bersifat **publik**, jadi jangan pernah commit `.env`, token, atau `service_role`. Publishable key di `site/js/config.js` memang untuk publik; pengamanan sebenarnya ada pada RLS dan fungsi server-side.
 
