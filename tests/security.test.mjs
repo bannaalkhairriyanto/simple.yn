@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
@@ -85,3 +85,53 @@ test('dashboard logout is wired to Supabase sign-out', () => {
   assert.match(html, /id="logout-button"/);
   assert.match(readFileSync(join(site, 'js', 'auth.js'), 'utf8'), /client\.auth\.signOut\(\)/);
 });
+
+test('deployed pages only link to files that actually exist', () => {
+  const target = (href) => {
+    const path = href.split('#')[0].split('?')[0];
+    if (path === '/') return join(site, 'index.html');
+    if (path.endsWith('/')) return join(site, path.slice(1), 'index.html');
+    return join(site, path.slice(1));
+  };
+  for (const path of htmlFiles) {
+    const html = readFileSync(path, 'utf8');
+    for (const match of html.matchAll(/(?:href|src)\s*=\s*"(\/[^"]*)"/g)) {
+      assert.ok(existsSync(target(match[1])), `${path.slice(root.length + 1)} links to missing ${match[1]}`);
+    }
+  }
+});
+
+test('every referenced SVG sprite icon exists', () => {
+  const sprite = readFileSync(join(site, 'img', 'icons.svg'), 'utf8');
+  const ids = new Set([...sprite.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
+  for (const path of [...htmlFiles, ...jsFiles]) {
+    for (const match of readFileSync(path, 'utf8').matchAll(/\/img\/icons\.svg#([\w-]+)/g)) {
+      assert.ok(ids.has(match[1]), `${path.slice(root.length + 1)} uses unknown icon #${match[1]}`);
+    }
+  }
+});
+
+test('gated pages start closed so nothing renders before auth resolves', () => {
+  const appPages = htmlFiles.filter((path) => path.startsWith(join(site, 'app')));
+  assert.ok(appPages.length > 0, 'no gated pages found');
+  for (const path of appPages) {
+    const html = readFileSync(path, 'utf8');
+    assert.match(html, /<html[^>]*\bdata-gate="pending"/, path);
+    assert.match(html, /\/js\/auth\.js/, path);
+  }
+});
+
+test('config.js and the CSP agree on one Supabase origin and no secret key', () => {
+  const config = readFileSync(join(site, 'js', 'config.js'), 'utf8');
+  const url = config.match(/supabaseUrl:\s*'([^']+)'/);
+  assert.ok(url, 'supabaseUrl missing from config.js');
+  const origin = new URL(url[1]).origin;
+
+  const headers = readFileSync(join(site, '_headers'), 'utf8');
+  const connect = headers.match(/connect-src([^;]+)/i);
+  assert.ok(connect, 'connect-src missing from _headers');
+  assert.ok(connect[1].includes(origin), `connect-src does not allow ${origin}`);
+  assert.match(headers, /strict-transport-security:\s*max-age=\d+/i);
+  assert.doesNotMatch(config, /service_role|sb_secret_/);
+});
+

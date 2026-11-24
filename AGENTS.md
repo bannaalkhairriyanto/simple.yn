@@ -27,7 +27,8 @@ Simple.yn is a static site (plain HTML/CSS/vanilla JS, no build step) backed by 
 ## Supabase / authorization contract
 
 - **RLS is the only authorization.** Hiding buttons or HTML is never a control.
-- Apply migrations **in order**: `001` → `002` → `003`. `001`/`002` alone are **weaker than production**: they inherit Supabase's default table grants, which reopen self-promotion to admin, purchase-status edits, anon writes, and `TRUNCATE` (not RLS-protected). `003_harden_grants.sql` closes that; it is idempotent and re-runnable.
+- Apply migrations **in order**: `001` → `002` → `003` → `004`. `001`/`002` alone are **weaker than production**: they inherit Supabase's default table grants, which reopen self-promotion to admin, purchase-status edits, anon writes, and `TRUNCATE` (not RLS-protected). `003_harden_grants.sql` closes that; it is idempotent and re-runnable.
+- `004_fix_pending_limit_and_approval.sql` fixes two defects found by live E2E probing: the 3-pending cap counted `new.user_id` in a BEFORE INSERT trigger that fires before `prepare_purchase`, so omitting `user_id` bypassed it (now counts `auth.uid()`), and `admin_mark_purchase` was SECURITY INVOKER so `003`'s `UPDATE` revocation made approval fail (now SECURITY DEFINER with its own `is_admin` check). Do not "simplify" either back.
 - Production table grants after `003` (do not widen without a probe):
   - `anon`: `SELECT` on `plans`.
   - `authenticated`: `SELECT` on `plans`, `profiles`, `entitlements`, `summary_metadata`, `summary_contents`; `UPDATE (username)` on `profiles`; `SELECT, INSERT` on `purchase_requests`; `INSERT, UPDATE, DELETE` on `summary_metadata` and `summary_contents` (write is still admin-gated by RLS).

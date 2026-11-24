@@ -1,6 +1,6 @@
 # Keamanan Simple.yn dengan Supabase
 
-Simple.yn sekarang menggunakan login sungguhan dan pemeriksaan akses di backend. Jangan menganggap status yang terlihat di html sebagai pembatas keamanan. Otorisasi diterapkan pada tabel dan fungsi SQL di `supabase/migrations/`. Terapkan `001`, `002`, lalu `003` sesuai urutan; `003` mencabut izin tabel bawaan Supabase yang tidak boleh dimiliki `anon`/`authenticated`.
+Simple.yn sekarang menggunakan login sungguhan dan pemeriksaan akses di backend. Jangan menganggap status yang terlihat di html sebagai pembatas keamanan. Otorisasi diterapkan pada tabel dan fungsi SQL di `supabase/migrations/`. Terapkan `001`, `002`, `003`, lalu `004` sesuai urutan; `003` mencabut izin tabel bawaan Supabase yang tidak boleh dimiliki `anon`/`authenticated`, dan `004` menutup celah batas permintaan serta memperbaiki persetujuan admin.
 
 ## Model akses yang digunakan
 

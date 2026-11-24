@@ -18,7 +18,10 @@ Catatan Money Tracker dan Study Planner tetap disimpan hanya di perangkat penggu
 - `site/` — berkas frontend yang diterbitkan oleh Cloudflare Pages.
 - `site/js/vendor/supabase.min.js` — klien resmi Supabase untuk browser, disimpan secara lokal beserta lisensinya.
 - `site/js/auth.js` — sesi PKCE, auto-refresh, email/password auth, dan pemeriksaan akses ke server.
-- `supabase/migrations/001_auth_payments_summaries.sql` — seluruh tabel, trigger, fungsi RPC, RLS, dan kebijakan Storage yang wajib diterapkan.
+- `supabase/migrations/` — empat migrasi berurutan; `001` berisi tabel, trigger, fungsi RPC, RLS, dan kebijakan Storage, lalu `002`–`004` adalah perbaikan yang wajib ikut diterapkan.
+- `tests/security.test.mjs` — tes keamanan dan integritas statis (CSP, inline script, tautan rusak, halaman terkunci, origin Supabase).
+- `.github/workflows/ci.yml` — menjalankan tes yang sama pada setiap push dan pull request.
+- `site/_headers` — CSP dan HSTS yang dibaca langsung oleh Cloudflare Pages.
 - `examples/` — dua format materi yang digunakan sebelum migrasi, tidak ikut dipublikasikan.
 - `README.md`, `SECURITY.md`, `demo-backup/` — di luar folder deploy, tidak perlu ikut naik ke hosting.
 
@@ -36,9 +39,10 @@ Buka **SQL Editor** lalu jalankan berkas berikut **sesuai urutan**:
 supabase/migrations/001_auth_payments_summaries.sql
 supabase/migrations/002_pending_purchase_limit.sql
 supabase/migrations/003_harden_grants.sql
+supabase/migrations/004_fix_pending_limit_and_approval.sql
 ```
 
-`001` membuat skema dan kebijakan, `002` membatasi jumlah permintaan `pending`, dan `003` mencabut izin bawaan Supabase yang terlalu luas. **Jangan lewati `003`:** tanpa berkas itu, pengguna yang login masih dapat mengubah peran atau status pembayarannya sendiri. Kamu juga dapat menggunakan workflow migrasi `supabase db push` jika Supabase CLI sudah dipasang dan terhubung ke proyek. Migrasi ini akan membuat:
+`001` membuat skema dan kebijakan, `002` membatasi jumlah permintaan `pending`, `003` mencabut izin bawaan Supabase yang terlalu luas, dan `004` memperbaiki dua cacat yang ditemukan lewat uji end-to-end: batas 3 permintaan yang sebelumnya bisa dilewati, serta persetujuan admin yang gagal dengan `permission denied` setelah `003` mencabut izin `UPDATE`. **Jangan lewati `003` dan `004`:** tanpa `003`, pengguna yang login dapat mengubah peran atau status pembayarannya sendiri; tanpa `004`, admin tidak dapat menekan **Tandai dibayar**. Kamu juga dapat menggunakan workflow migrasi `supabase db push` jika Supabase CLI sudah dipasang dan terhubung ke proyek. Migrasi ini akan membuat:
 
 - `profiles`: email, username, dan peran tepercaya (`student` atau `admin`).
 - `plans`: harga serta isi paket yang menjadi acuan pembayaran.
@@ -102,6 +106,29 @@ update public.profiles set role = 'student' where email = 'alamat-anggota@exampl
 ```
 
 Perubahan peran akan terlihat saat akses berikutnya diperiksa ke server.
+
+### Mengatur URL Auth, konfirmasi email, dan SMTP
+
+Halaman `login.html` mengirim `emailRedirectTo` ke `/login.html` pada origin yang sedang dibuka. Supabase hanya mau mengarahkan ke origin yang terdaftar:
+
+1. Buka **Authentication → URL Configuration**.
+2. **Site URL**: origin produksi, misalnya `https://simpleyn.pages.dev` atau domain sendiri. Jangan biarkan `http://localhost:3000` saat rilis.
+3. **Redirect URLs**: tambahkan `https://<domain>/login.html`. Tambahkan juga URL preview `https://<hash>.simpleyn.pages.dev/login.html` bila preview dipakai untuk uji coba.
+4. Buka **Authentication → Providers → Email**: aktifkan **Confirm email** dan tetapkan **minimum password length 12** agar sama dengan aturan di `auth.js` (12–72 karakter).
+
+**Konfirmasi email wajib punya SMTP sendiri sebelum rilis.** Server email bawaan Supabase hanya untuk uji coba dan sangat cepat kena limit: saat pengujian, email konfirmasi ketiga ditolak dengan `429 too many requests`, sehingga pendaftaran pengguna baru akan gagal. Isi **Authentication → SMTP Settings** dengan penyedia email sebelum mengumumkan situs.
+
+Perlindungan kata sandi bocor (*leaked password protection*) hanya tersedia pada paket berbayar Supabase. Selama proyek memakai paket gratis, fitur itu tetap nonaktif; ini keputusan pemilik proyek, bukan kelalaian konfigurasi.
+
+### Checklist sebelum rilis
+
+Beberapa hal sengaja dibiarkan sebagai placeholder agar tidak menampilkan data palsu. Ganti sebelum situs dipublikasikan:
+
+- `site/privasi.html` dan `site/syarat.html` masih memuat `[TANGGAL]` serta `[PENGELOLA: ...]`. Isi tanggal berlaku, nama/alamat/kontak pengelola, dan kebijakan pengembalian dana. Halaman itu juga berlabel **DRAFT**.
+- `site/img/qris.png` masih gambar contoh; ganti dengan QRIS resmi milikmu.
+- `site/js/config.js`: `payment.whatsAppNumber` sudah diisi nomor asli; jangan ganti dengan nomor contoh. Pastikan juga harga di `bundles`/`singles` sama dengan tabel `plans`.
+- Buat akun admin pertama (bagian 4) dan pastikan **Kelola materi** serta **Persetujuan pembayaran** terbuka.
+- Selesaikan **URL Auth + SMTP** di atas, lalu daftarkan satu akun sungguhan dari perangkat lain untuk memastikan email konfirmasi sampai.
 
 ## Menyetujui pembayaran
 
@@ -168,7 +195,9 @@ python -m http.server 8000
 
 Buka `http://localhost:8000/`. Jangan buka file langsung lewat `file://` karena JavaScript modul/fetch dan konfigurasi hosting tidak berperilaku sama.
 
-Isi `config.js` dan `_headers` terlebih dahulu untuk pengujian fungsi penuh. Gunakan proyek Supabase terpisah untuk test bila memungkinkan. Jika `YOUR_PROJECT`/`PASTE_` masih ada, login dan pembelian memang berhenti; sistem tidak menyediakan akun demo atau bypass produksi.
+`site/js/config.js` sudah menunjuk ke proyek produksi `pwshbnunqzgsqhidadse`, jadi **tes manual akan menulis ke database produksi**. Tidak ada proyek staging di repo ini. Untuk uji alur pembelian, pakai akun uji sekali pakai lalu hapus lewat SQL Editor (`auth.users`, `profiles`, `purchase_requests`, `entitlements`). Jangan menguji dengan akun asli pengguna.
+
+Jika `YOUR_PROJECT`/`PASTE_` masih ada, login dan pembelian memang berhenti; sistem tidak menyediakan akun demo atau bypass produksi.
 
 Sebelum deploy, buat satu akun siswa uji dan satu admin uji:
 
