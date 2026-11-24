@@ -73,6 +73,7 @@ h2 { font-size: 26px; }
 h3 { font-size: 19px; }
 h4 { font-size: 17px; }
 a { color: var(--primary); text-decoration: none; }
+main p a, main li a, main dd a { text-decoration: underline; text-underline-offset: 2px; }
 button, input, select, textarea { font: inherit; }
 button, select { cursor: pointer; }
 [hidden] { display: none !important; }
