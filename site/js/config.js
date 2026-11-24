@@ -41,8 +41,7 @@ window.SIMPLEYN_CONFIG = {
     { id: 'summaries', name: 'Course Summaries', price: 12000, icon: 'book' }
   ],
   payment: {
-    /* Digits only: country code + number, without + or spaces. */
-    whatsAppNumber: '6281234567890',
+    whatsAppNumber: '628156002399',
     qrisImagePath: '/img/qris.png'
   }
 };
