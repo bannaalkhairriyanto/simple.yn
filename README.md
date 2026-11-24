@@ -141,9 +141,11 @@ Isi di **Authentication → SMTP Settings** (`/project/_/auth/smtp`):
 
 Pilihan penyedia untuk proyek tanpa domain sendiri:
 
-- **Brevo** — gratis 300 email/hari, cukup verifikasi satu alamat pengirim (tidak perlu domain). Host `smtp-relay.brevo.com`, port `587`. Paling cocok untuk jangka panjang.
-- **Gmail SMTP** — host `smtp.gmail.com`, port `587`, password harus **App Password 16 karakter** (wajib aktifkan verifikasi 2 langkah), bukan kata sandi Gmail biasa. Paling cepat, tapi rawan diblokir Google dan kurang rapi untuk produk.
-- **Resend / ZeptoMail / SendGrid** — butuh domain terverifikasi beserta DKIM/SPF/DMARC. Pakai ini kalau nanti sudah punya domain, karena deliverability-nya jauh lebih baik daripada pengirim Gmail/Brevo tanpa domain.
+- **Gmail SMTP (paling andal tanpa domain)** — host `smtp.gmail.com`, port `587`, username = alamat Gmail lengkap, password harus **App Password 16 karakter** (aktifkan verifikasi 2 langkah dulu), bukan kata sandi Gmail biasa. Pesan dikirim oleh server Google sendiri sehingga SPF dan DKIM `gmail.com` valid; batasnya sekitar 500 penerima per hari. Cukup untuk satu kelompok kelas.
+- **Brevo** — gratis 300 email/hari dan tidak perlu domain, tetapi **jangan memakai alamat `@gmail.com` sebagai Sender di Brevo**: Brevo tidak termasuk SPF `gmail.com` dan tidak bisa menandatangani DKIM untuk domain itu, jadi pesan akan sering masuk spam atau ditolak. Brevo baru masuk akal setelah punya domain sendiri (verifikasi domain, lalu SPF/DKIM diatur di DNS).
+- **Resend / ZeptoMail / SendGrid** — wajib domain terverifikasi beserta DKIM/SPF/DMARC. Ini jalur terbaik untuk jangka panjang, tetapi harus menunggu domain.
+
+Kesimpulan praktis: pakai **Gmail App Password** sekarang agar konfirmasi email sampai ke mahasiswa, lalu pindah ke Brevo/Resend saat domain sudah ada. Jangan memakai Gmail sebagai pengirim lewat Brevo.
 
 Setelah tersimpan, naikkan **Authentication → Rate Limits → Emails sent by Supabase Auth** (default 30 per jam) sesuai kebutuhan. Jangan mematikan **Confirm email** untuk menembus limit: itu membuka pendaftaran palsu oleh bot dan merusak reputasi domain pengirim.
 
