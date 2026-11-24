@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masuk — Simple.yn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
+  <script defer src="/js/config.js"></script>
+  <script defer src="/js/vendor/supabase.min.js"></script>
+  <script defer src="/js/util.js"></script>
+  <script defer src="/js/auth.js"></script>
+  <script defer src="/js/login.js"></script>
+</head>
+<body>
+  <nav class="nav" aria-label="Navigasi utama"><div class="nav-in"><a class="logo" href="/"><span class="logo-dot" aria-hidden="true"></span>Simple.yn</a><div class="nav-links"><a class="nav-link" href="/">Beranda</a><a class="nav-link" href="/harga.html">Harga</a><a class="nav-link" href="/app/">Dashboard</a></div><div class="nav-right"><button class="btn btn-outline btn-sm theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Ganti tema"><span aria-hidden="true">◐</span></button><a class="btn btn-outline btn-sm" href="/harga.html">Lihat harga</a></div></div></nav>
+  <main class="auth-wrap">
+    <section class="auth-card">
+      <h1>Selamat datang</h1>
+      <p>Masuk dengan email dan kata sandi yang sudah terdaftar, atau buat akun baru.</p>
+      <div class="tabs" role="tablist" aria-label="Pilihan akun">
+        <button class="tab on" id="tab-masuk" type="button" role="tab" aria-selected="true">Masuk</button>
+        <button class="tab" id="tab-daftar" type="button" role="tab" aria-selected="false">Daftar</button>
+      </div>
+      <div class="form-err" id="login-error" role="alert" hidden></div>
+      <div class="form-note" id="login-notice" role="status"></div>
+      <form id="login-form" novalidate hidden>
+        <div class="field" id="username-field" hidden>
+          <label for="register-username">Username</label>
+          <input id="register-username" type="text" minlength="3" maxlength="24" pattern="[a-z0-9_]{3,24}" placeholder="mis. rara_kuliah" autocomplete="username">
+          <p class="form-note">3–24 karakter: huruf kecil, angka, atau garis bawah.</p>
+        </div>
+        <div class="field">
+          <label for="auth-email">Email</label>
+          <input id="auth-email" type="email" maxlength="100" required placeholder="mis. rara@student.ac.id" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="auth-password">Kata sandi</label>
+          <input id="auth-password" type="password" maxlength="72" required autocomplete="current-password">
+        </div>
+        <div class="field" id="confirm-field" hidden>
+          <label for="register-confirm">Ulangi kata sandi</label>
+          <input id="register-confirm" type="password" maxlength="72" autocomplete="new-password">
+        </div>
+        <p class="form-note" id="password-note" hidden>Gunakan 12–72 karakter untuk akun baru.</p>
+        <button class="btn btn-primary btn-block" id="auth-submit" type="submit">Masuk</button>
+        <p class="form-note">Kata sandi diproses oleh Supabase Auth. Simple.yn tidak menyimpannya di perangkat atau basis datanya sendiri.</p>
+      </form>
+    </section>
+    <noscript><p class="notice">Login memerlukan JavaScript agar permintaan hanya dikirim ke Supabase Auth dan tidak ke hosting statis.</p></noscript>
+  </main>
+</body>
+</html>

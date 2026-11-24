@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id" data-gate="pending">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin Materi — Simple.yn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
+  <script defer src="/js/config.js"></script>
+  <script defer src="/js/vendor/supabase.min.js"></script>
+  <script defer src="/js/util.js"></script>
+  <script defer src="/js/auth.js"></script>
+  <script defer src="/js/markdown.js"></script>
+  <script defer src="/js/admin.js"></script>
+</head>
+<body>
+  <nav class="nav" aria-label="Navigasi utama"><div class="nav-in"><a class="logo" href="/"><span class="logo-dot" aria-hidden="true"></span>Simple.yn</a><div class="nav-links"><a class="nav-link" href="/">Beranda</a><a class="nav-link" href="/harga.html">Harga</a><a class="nav-link on" href="/app/">Dashboard</a></div><div class="nav-right"><button class="btn btn-outline btn-sm theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Ganti tema"><span aria-hidden="true">◐</span></button><button class="btn btn-outline btn-sm" id="logout-button" type="button">Keluar</button></div></div></nav>
+  <div class="shell">
+    <aside class="side" aria-label="Navigasi alat">
+      <div class="side-user"><b>Alat belajarmu</b><span class="muted">Kelola ringkasan tim.</span></div><div class="side-label">Alat</div>
+      <div class="side-nav"><a class="side-btn" href="/app/keuangan.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#wallet"></use></svg>Money Tracker</a><a class="side-btn" href="/app/ringkasan.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#book"></use></svg>Ringkasan Materi</a><a class="side-btn" href="/app/planner.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#cal"></use></svg>Study Planner</a></div>
+      <div class="side-label">Lainnya</div><div class="side-nav"><a class="side-btn" href="/harga.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#cart"></use></svg>Lihat harga</a><a class="side-btn on" href="/app/admin.html" aria-current="page"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#pen"></use></svg>Kelola materi</a></div>
+    </aside>
+    <main class="main fade-in"><p class="gate-msg notice" role="status"></p>
+      <div class="main-head"><div><h1>Kelola materi</h1><p>Tulis ringkasan tim, periksa tampilannya, lalu publikasikan untuk mahasiswa yang punya akses.</p></div></div>
+      <p class="notice local-note">Halaman khusus admin. Materi tersimpan di database dan PDF di penyimpanan privat. Semua tindakan admin juga diperiksa ulang oleh Supabase.</p>
+      <section class="card admin-form-card" aria-labelledby="create-title">
+        <h2 id="create-title">Tambah ringkasan baru</h2>
+        <p class="small muted" id="index-note">Memeriksa daftar materi…</p>
+        <form id="admin-form" novalidate>
+          <div class="admin-field-row">
+            <div class="field"><label for="summary-course">Mata kuliah</label><input id="summary-course" list="existing-courses" type="text" maxlength="100" required placeholder="mis. Statistika" autocomplete="off"><datalist id="existing-courses"></datalist></div>
+            <div class="field"><label for="summary-week">Minggu ke-</label><input id="summary-week" type="number" min="1" max="52" step="1" required placeholder="5" inputmode="numeric"></div>
+          </div>
+          <div class="field"><label for="summary-title-input">Judul ringkasan</label><input id="summary-title-input" type="text" maxlength="100" required placeholder="mis. Pengujian hipotesis satu sampel" autocomplete="off"></div>
+          <div class="admin-field-row">
+            <div class="field"><label for="summary-updated">Tanggal pembaruan</label><input id="summary-updated" type="date" required></div>
+            <div class="field"><label for="summary-type">Jenis berkas</label><select id="summary-type" required><option value="md">Tulis Markdown (.md)</option><option value="pdf">Pilih PDF (.pdf)</option></select></div>
+          </div>
+          <div class="field" id="markdown-input-field">
+            <label for="summary-content">Isi ringkasan</label>
+            <textarea id="summary-content" class="admin-content" rows="14" maxlength="200000" required placeholder="# Judul bagian&#10;&#10;Tulis paragraf atau poin penting di sini.&#10;&#10;- Poin pertama&#10;- Poin kedua"></textarea>
+            <p class="form-note">Gunakan # untuk subjudul, - untuk poin, dan angka untuk urutan. HTML mentah tidak dijalankan.</p>
+          </div>
+          <div class="field" id="pdf-input-field" hidden>
+            <label for="summary-pdf">Berkas PDF</label>
+            <input id="summary-pdf" type="file" accept=".pdf,application/pdf">
+            <p class="form-note" id="pdf-selection">Pilih PDF dari perangkatmu. Berkas baru diunggah setelah kamu menekan publikasikan.</p>
+          </div>
+          <button class="btn btn-primary btn-block" id="generate-button" type="submit"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#plus"></use></svg>Tinjau &amp; siapkan berkas</button>
+          <p class="form-err" id="admin-error" role="alert" hidden></p>
+        </form>
+      </section>
+      <p class="form-note">Isian tidak disimpan sebagai draf. Tinjau hasilnya sebelum menekan tombol publikasikan.</p>
+    </main>
+  </div>
+  <section class="container admin-output" id="output-section" aria-labelledby="output-title" hidden>
+    <div class="admin-preview-head"><h2 id="output-title">Pratinjau sebelum publikasi</h2><p class="muted small">Belum dipublikasikan. Periksa hasilnya sebelum menekan tombol.</p></div>
+    <article class="reader-body" id="markdown-preview"></article>
+    <div class="card" id="pdf-preview" hidden></div>
+    <div class="card admin-export">
+      <h2>Entri yang akan dipublikasikan</h2>
+      <p class="muted small" id="content-destination"></p>
+      <textarea id="json-entry" class="json-entry" rows="12" readonly aria-label="Entri ringkasan baru"></textarea>
+      <button class="btn btn-primary" id="publish-button" type="button" disabled>Publikasikan ringkasan</button>
+      <p class="form-note" id="publication-status" role="status"></p>
+    </div>
+  </section>
+  <section class="container admin-output" id="payments-section" aria-labelledby="payments-title" hidden>
+    <div class="admin-preview-head"><h2 id="payments-title">Persetujuan pembayaran</h2><p class="muted small">Periksa bukti QRIS sebelum menandai pembayaran. Persetujuan langsung membuka alat sesuai paket.</p></div>
+    <div class="inline-actions"><div class="field"><label for="payment-filter">Status</label><select id="payment-filter"><option value="pending">Menunggu konfirmasi</option><option value="paid">Sudah dibayar</option><option value="rejected">Ditolak</option></select></div><button class="btn btn-outline" id="refresh-payments" type="button">Muat ulang daftar</button></div>
+    <div id="payment-status" role="status"></div>
+    <div class="admin-payment-list" id="payment-list"></div>
+  </section>
+  <noscript><div class="container"><div class="notice">Aktifkan JavaScript untuk membuat pratinjau dan berkas unduhan.</div></div></noscript>
+</body>
+</html>

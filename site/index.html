@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simple.yn membantu mahasiswa mencatat keuangan, mengatur tugas, dan membaca ringkasan materi.">
+  <title>Simple.yn — Teman kuliah sehari-hari</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
+</head>
+<body>
+  <nav class="nav" aria-label="Navigasi utama">
+    <div class="nav-in">
+      <a class="logo" href="/"><span class="logo-dot" aria-hidden="true"></span>Simple.yn</a>
+      <div class="nav-links">
+        <a class="nav-link on" href="/">Beranda</a>
+        <a class="nav-link" href="/harga.html">Harga</a>
+        <a class="nav-link" href="/app/">Dashboard</a>
+      </div>
+      <div class="nav-right"><button class="btn btn-outline btn-sm theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Ganti tema"><span aria-hidden="true">◐</span></button><a class="btn btn-primary btn-sm" href="/login.html">Masuk</a></div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <h1>Keuangan, tugas, dan materi kuliah di satu tempat.</h1>
+            <p class="lead">Catat pengeluaran, atur tugas, dan baca ringkasan materi dari tim kami.</p>
+            <div class="hero-cta">
+              <a class="btn btn-primary btn-lg" href="/app/">Mulai</a>
+              <a class="btn btn-outline btn-lg" href="/harga.html">Lihat harga</a>
+            </div>
+            <div class="hero-note">Money Tracker dan Study Planner menyimpan datamu di perangkat ini.</div>
+          </div>
+          <div class="hero-art">
+            <div class="hero-row">
+              <div class="hero-ico"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#wallet"></use></svg></div>
+              <div><b>Catatan keuangan</b><div class="muted small">Uang masuk, keluar, dan saldo</div></div>
+              <div class="bars" aria-hidden="true"><i class="bar-1"></i><i class="bar-2"></i><i class="bar-3"></i><i class="bar-4"></i></div>
+            </div>
+            <div class="hero-row">
+              <div class="hero-ico"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#cal"></use></svg></div>
+              <div><b>Atur tugas</b><div class="muted small">Sebaran tugas dalam sepekan</div></div>
+              <svg class="ic hero-check" aria-hidden="true"><use href="/img/icons.svg#check"></use></svg>
+            </div>
+            <div class="hero-row">
+              <div class="hero-ico"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#book"></use></svg></div>
+              <div><b>Ringkasan materi mingguan</b><div class="muted small">Diperbarui oleh tim kami</div></div>
+              <svg class="ic hero-check" aria-hidden="true"><use href="/img/icons.svg#check"></use></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tools-sec">
+        <div class="sec-head">
+          <h2>Tiga alat, satu tempat</h2>
+          <p>Tiga alat untuk kebutuhan harian mahasiswa. Beli satu, atau ambil paket.</p>
+        </div>
+        <div class="tools-grid">
+          <a class="tool-card" href="/app/keuangan.html">
+            <div class="tool-head"><div class="tool-ico"><svg class="ic ic-lg" aria-hidden="true"><use href="/img/icons.svg#wallet"></use></svg></div><h3>Money Tracker</h3></div>
+            <p>Catat uang masuk dan keluar, lihat saldo, dan pantau kategori pengeluaran.</p>
+            <span class="tool-card-go">Buka Money Tracker <svg class="ic" aria-hidden="true"><use href="/img/icons.svg#arrow-r"></use></svg></span>
+          </a>
+          <a class="tool-card" href="/app/ringkasan.html">
+            <div class="tool-head"><div class="tool-ico"><svg class="ic ic-lg" aria-hidden="true"><use href="/img/icons.svg#book"></use></svg></div><h3>Ringkasan Materi</h3></div>
+            <p>Ringkasan mingguan untuk mata kuliah umum, ditulis dan diperbarui tim kami.</p>
+            <span class="tool-card-go">Buka ringkasan <svg class="ic" aria-hidden="true"><use href="/img/icons.svg#arrow-r"></use></svg></span>
+          </a>
+          <a class="tool-card" href="/app/planner.html">
+            <div class="tool-head"><div class="tool-ico"><svg class="ic ic-lg" aria-hidden="true"><use href="/img/icons.svg#cal"></use></svg></div><h3>Study Planner</h3></div>
+            <p>Catat tugas dan tenggatnya, centang yang selesai, lihat sebaran minggu ini.</p>
+            <span class="tool-card-go">Buka Study Planner <svg class="ic" aria-hidden="true"><use href="/img/icons.svg#arrow-r"></use></svg></span>
+          </a>
+        </div>
+      </section>
+
+      <section class="how-sec">
+        <div class="sec-head"><h2>Caranya simpel</h2></div>
+        <div class="how-grid">
+          <div class="how-item"><div class="how-num">1</div><h3>Masuk ke dashboard</h3><p>Daftar dengan username, email, dan kata sandi.</p></div>
+          <div class="how-item"><div class="how-num">2</div><h3>Pilih alat yang kamu butuh</h3><p>Beli satu alat atau paket. Harganya sekali bayar, tanpa langganan.</p></div>
+          <div class="how-item"><div class="how-num">3</div><h3>Pakai tiap hari</h3><p>Catatan Money Tracker dan Study Planner tetap di perangkatmu.</p></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="container"><div class="foot"><span>Simple.yn — untuk kebutuhan kelompok kelas kita.</span><a href="/harga.html">Harga dan cara bayar</a><a href="/syarat.html">Syarat dan Ketentuan</a><a href="/privasi.html">Kebijakan Privasi</a></div></footer>
+</body>
+</html>

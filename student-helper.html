@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Helper</title>
+<style>
+  :root {
+    --bg: #f4f7fb;
+    --card: #ffffff;
+    --text: #2b3445;
+    --muted: #7a8598;
+    --accent: #5b7cfa;
+    --accent-soft: #eef2ff;
+    --border: #e6eaf2;
+    --green: #34c38f;
+    --red: #f0716e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+  }
+  header { text-align: center; margin-bottom: 20px; }
+  header h1 { font-size: 26px; font-weight: 600; }
+  header p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(91, 124, 250, 0.06);
+    padding: 20px;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    width: 100%;
+    max-width: 520px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 6px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+  }
+  .tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tab-btn.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  section { display: none; width: 100%; max-width: 520px; }
+  section.active { display: block; }
+  section h2 { font-size: 17px; margin-bottom: 12px; }
+
+  /* Tasks */
+  .task-add { display: flex; gap: 8px; margin-bottom: 14px; }
+  input[type="text"], input[type="number"], select, textarea {
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    background: #fbfcfe;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  .task-add input { flex: 1; }
+
+  button.primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease;
+  }
+  button.primary:hover { background: #4566e8; }
+
+  ul.task-list { list-style: none; }
+  ul.task-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    background: #fbfcfe;
+  }
+  ul.task-list li.done label {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+  ul.task-list label { flex: 1; font-size: 14px; cursor: pointer; }
+  ul.task-list input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+  .delete-btn {
+    background: none;
+    border: none;
+    color: var(--red);
+    font-size: 15px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  .delete-btn:hover { background: #fef1f0; }
+  .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 16px 0; }
+
+  /* Timer */
+  .timer-display {
+    font-size: 52px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin: 10px 0 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-mode { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .timer-btns { display: flex; gap: 8px; justify-content: center; }
+  .timer-btns .ghost {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .mode-switch { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
+  .mode-switch button {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .mode-switch button.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* GPA */
+  .gpa-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .gpa-row input { flex: 1; }
+  .gpa-row select { width: 90px; }
+  .gpa-row .delete-btn { align-self: center; }
+  .gpa-result {
+    margin-top: 14px;
+    padding: 14px;
+    background: var(--accent-soft);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 16px;
+  }
+  .gpa-result strong { color: var(--accent); font-size: 22px; }
+  .gpa-add { width: 100%; margin-top: 4px; }
+
+  /* Notes */
+  textarea { width: 100%; min-height: 220px; resize: vertical; line-height: 1.5; }
+  .saved-hint { color: var(--muted); font-size: 12px; margin-top: 8px; text-align: right; }
+
+  footer { margin-top: 24px; color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎓 Student Helper</h1>
+  <p>Your simple study companion — tasks, timer, GPA and notes</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="tasks">✅ Tasks</button>
+  <button class="tab-btn" data-tab="timer">⏱️ Study Timer</button>
+  <button class="tab-btn" data-tab="gpa">📊 GPA</button>
+  <button class="tab-btn" data-tab="notes">📝 Notes</button>
+</div>
+
+<!-- TASKS -->
+<section id="tab-tasks" class="active">
+  <div class="card">
+    <h2>To-Do List</h2>
+    <div class="task-add">
+      <input type="text" id="taskInput" placeholder="Add a task, e.g. Finish math homework..." maxlength="120">
+      <button class="primary" id="addTaskBtn">Add</button>
+    </div>
+    <ul class="task-list" id="taskList"></ul>
+    <p class="empty" id="taskEmpty" style="display:none">No tasks yet — add one above! 🌟</p>
+  </div>
+</section>
+
+<!-- TIMER -->
+<section id="tab-timer">
+  <div class="card">
+    <h2>Pomodoro Study Timer</h2>
+    <div class="mode-switch">
+      <button id="modeWork" class="active">Focus · 25 min</button>
+      <button id="modeBreak">Break · 5 min</button>
+    </div>
+    <div class="timer-display" id="timerDisplay">25:00</div>
+    <div class="timer-mode" id="timerStatus">Ready to focus!</div>
+    <div class="timer-btns">
+      <button class="primary" id="startBtn">Start</button>
+      <button class="ghost" id="resetBtn">Reset</button>
+    </div>
+  </div>
+</section>
+
+<!-- GPA -->
+<section id="tab-gpa">
+  <div class="card">
+    <h2>GPA Calculator</h2>
+    <div id="gpaRows"></div>
+    <button class="primary gpa-add" id="addCourseBtn">+ Add Course</button>
+    <div class="gpa-result">
+      GPA: <strong id="gpaValue">–</strong>
+      <span style="color:var(--muted)"> (out of 4.0)</span>
+    </div>
+  </div>
+</section>
+
+<!-- NOTES -->
+<section id="tab-notes">
+  <div class="card">
+    <h2>Quick Notes</h2>
+    <textarea id="notesArea" placeholder="Write anything you need to remember..."></textarea>
+    <div class="saved-hint">Notes save automatically ✓</div>
+  </div>
+</section>
+
+<footer>Data is stored locally in your browser.</footer>
+
+<script>
+  /* ---------- Tabs ---------- */
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const sections = document.querySelectorAll('section');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* ---------- Tasks ---------- */
+  const taskInput = document.getElementById('taskInput');
+  const taskList = document.getElementById('taskList');
+  const taskEmpty = document.getElementById('taskEmpty');
+  let tasks = JSON.parse(localStorage.getItem('sh_tasks') || '[]');
+
+  function saveTasks() { localStorage.setItem('sh_tasks', JSON.stringify(tasks)); }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[c]));
+  }
+
+  function renderTasks() {
+    taskList.innerHTML = '';
+    tasks.forEach((t, i) => {
+      const li = document.createElement('li');
+      if (t.done) li.classList.add('done');
+      li.innerHTML =
+        '<input type="checkbox" ' + (t.done ? 'checked' : '') + ' data-i="' + i + '">' +
+        '<label data-i="' + i + '">' + escapeHtml(t.text) + '</label>' +
+        '<button class="delete-btn" title="Delete" data-del="' + i + '">✕</button>';
+      taskList.appendChild(li);
+    });
+    taskEmpty.style.display = tasks.length ? 'none' : 'block';
+  }
+
+  function addTask() {
+    const text = taskInput.value.trim();
+    if (!text) return;
+    tasks.push({ text, done: false });
+    taskInput.value = '';
+    saveTasks();
+    renderTasks();
+  }
+
+  document.getElementById('addTaskBtn').addEventListener('click', addTask);
+  taskInput.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+  taskList.addEventListener('click', e => {
+    if (e.target.dataset.i !== undefined && (e.target.tagName === 'LABEL' || e.target.tagName === 'INPUT')) {
+      const i = Number(e.target.dataset.i);
+      tasks[i].done = !tasks[i].done;
+      saveTasks();
+      renderTasks();
+    }
+    const del = e.target.dataset.del;
+    if (del !== undefined) {
+      tasks.splice(Number(del), 1);
+      saveTasks();
+      renderTasks();
+    }
+  });
+
+  renderTasks();
+
+  /* ---------- Timer ---------- */
+  const timerDisplay = document.getElementById('timerDisplay');
+  const timerStatus = document.getElementById('timerStatus');
+  const startBtn = document.getElementById('startBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const modeWork = document.getElementById('modeWork');
+  const modeBreak = document.getElementById('modeBreak');
+
+  const DURATIONS = { work: 25 * 60, break: 5 * 60 };
+  let mode = 'work';
+  let remaining = DURATIONS.work;
+  let timerId = null;
+
+  function fmt(s) {
+    const m = Math.floor(s / 60), sec = s % 60;
+    return m + ':' + String(sec).padStart(2, '0');
+  }
+
+  function updateDisplay() {
+    timerDisplay.textContent = fmt(remaining);
+    timerStatus.textContent = timerId
+      ? (mode === 'work' ? 'Focusing… keep going! 💪' : 'Break time — relax 🍵')
+      : 'Paused — press Start when ready.';
+  }
+
+  function setMode(m) {
+    stopTimer();
+    mode = m;
+    remaining = DURATIONS[m];
+    modeWork.classList.toggle('active', m === 'work');
+    modeBreak.classList.toggle('active', m === 'break');
+    updateDisplay();
+  }
+
+  function stopTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = null;
+    startBtn.textContent = 'Start';
+    updateDisplay();
+  }
+
+  startBtn.addEventListener('click', () => {
+    if (timerId) { stopTimer(); return; }
+    if (remaining <= 0) remaining = DURATIONS[mode];
+    timerId = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(timerId);
+        timerId = null;
+        remaining = 0;
+        timerStatus.textContent = mode === 'work' ? "Time's up! Great work 🎉" : "Break's over — back to it! 📚";
+        startBtn.textContent = 'Start';
+      } else {
+        updateDisplay();
+      }
+    }, 1000);
+    startBtn.textContent = 'Pause';
+    updateDisplay();
+  });
+
+  resetBtn.addEventListener('click', () => { remaining = DURATIONS[mode]; stopTimer(); });
+  modeWork.addEventListener('click', () => setMode('work'));
+  modeBreak.addEventListener('click', () => setMode('break'));
+  updateDisplay();
+
+  /* ---------- GPA ---------- */
+  const GRADES = { 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D': 1.0, 'F': 0 };
+  const gpaRows = document.getElementById('gpaRows');
+  const gpaValue = document.getElementById('gpaValue');
+  let courses = JSON.parse(localStorage.getItem('sh_courses') || 'null') || [{ name: '', grade: 'A', credits: 3 }];
+
+  function saveCourses() { localStorage.setItem('sh_courses', JSON.stringify(courses)); }
+
+  function calcGpa() {
+    let points = 0, credits = 0;
+    courses.forEach(c => {
+      const cr = parseFloat(c.credits);
+      if (!isNaN(cr) && cr > 0) {
+        points += (GRADES[c.grade] || 0) * cr;
+        credits += cr;
+      }
+    });
+    gpaValue.textContent = credits ? (points / credits).toFixed(2) : '–';
+  }
+
+  function renderCourses() {
+    gpaRows.innerHTML = '';
+    courses.forEach((c, i) => {
+      const row = document.createElement('div');
+      row.className = 'gpa-row';
+      row.innerHTML =
+        '<input type="text" placeholder="Course name" value="' + escapeHtml(c.name) + '" data-name="' + i + '" maxlength="60">' +
+        '<select data-grade="' + i + '">' +
+        Object.keys(GRADES).map(g => '<option' + (g === c.grade ? ' selected' : '') + '>' + g + '</option>').join('') +
+        '</select>' +
+        '<input type="number" min="0" step="0.5" placeholder="Cr" value="' + c.credits + '" data-cr="' + i + '" style="width:70px">' +
+        '<button class="delete-btn" data-del="' + i + '">✕</button>';
+      gpaRows.appendChild(row);
+    });
+    calcGpa();
+  }
+
+  gpaRows.addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset.name !== undefined) courses[t.dataset.name].name = t.value;
+    if (t.dataset.grade !== undefined) courses[t.dataset.grade].grade = t.value;
+    if (t.dataset.cr !== undefined) courses[t.dataset.cr].credits = t.value;
+    saveCourses();
+    calcGpa();
+  });
+
+  gpaRows.addEventListener('click', e => {
+    const del = e.target.dataset.del;
+    if (del !== undefined && courses.length > 1) {
+      courses.splice(Number(del), 1);
+      saveCourses();
+      renderCourses();
+    }
+  });
+
+  document.getElementById('addCourseBtn').addEventListener('click', () => {
+    courses.push({ name: '', grade: 'A', credits: 3 });
+    saveCourses();
+    renderCourses();
+  });
+
+  renderCourses();
+
+  /* ---------- Notes ---------- */
+  const notesArea = document.getElementById('notesArea');
+  notesArea.value = localStorage.getItem('sh_notes') || '';
+  notesArea.addEventListener('input', () => localStorage.setItem('sh_notes', notesArea.value));
+</script>
+</body>
+</html>

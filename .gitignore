@@ -1,0 +1,17 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+.vscode/
+.idea/
+
+# Secrets and local env
+.env
+.env.*
+!.env.example
+
+# Dependencies and tooling caches
+node_modules/
+.supabase/
+.wrangler/

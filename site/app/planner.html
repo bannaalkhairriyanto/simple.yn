@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id" data-gate="pending">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Study Planner — Simple.yn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
+  <script defer src="/js/config.js"></script>
+  <script defer src="/js/vendor/supabase.min.js"></script>
+  <script defer src="/js/util.js"></script>
+  <script defer src="/js/auth.js"></script>
+  <script defer src="/js/planner.js"></script>
+</head>
+<body>
+  <nav class="nav" aria-label="Navigasi utama"><div class="nav-in"><a class="logo" href="/"><span class="logo-dot" aria-hidden="true"></span>Simple.yn</a><div class="nav-links"><a class="nav-link" href="/">Beranda</a><a class="nav-link" href="/harga.html">Harga</a><a class="nav-link on" href="/app/">Dashboard</a></div><div class="nav-right"><button class="btn btn-outline btn-sm theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Ganti tema"><span aria-hidden="true">◐</span></button><button class="btn btn-outline btn-sm" id="logout-button" type="button">Keluar</button></div></div></nav>
+  <div class="shell">
+    <aside class="side" aria-label="Navigasi alat">
+      <div class="side-user"><b>Alat belajarmu</b><span class="muted">Tugas lebih teratur.</span></div><div class="side-label">Alat</div>
+      <div class="side-nav"><a class="side-btn" href="/app/keuangan.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#wallet"></use></svg>Money Tracker</a><a class="side-btn" href="/app/ringkasan.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#book"></use></svg>Ringkasan Materi</a><a class="side-btn on" href="/app/planner.html" aria-current="page"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#cal"></use></svg>Study Planner</a></div>
+      <div class="side-label">Lainnya</div><div class="side-nav"><a class="side-btn" href="/harga.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#cart"></use></svg>Lihat harga</a><a class="side-btn" href="/app/admin.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#pen"></use></svg>Kelola materi</a></div>
+    </aside>
+    <main class="main fade-in"><p class="gate-msg notice" role="status"></p>
+      <div class="main-head"><div><h1>Study Planner</h1><p id="planner-status">Atur tugasmu satu per satu.</p></div><button class="btn btn-danger btn-sm" id="clear-data" type="button" hidden><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#trash"></use></svg>Hapus semua data</button></div>
+      <p class="notice local-note">Datamu tersimpan di perangkat ini saja.</p>
+      <div class="pl-grid">
+        <div class="card">
+          <h2 id="task-form-title">Tambah tugas</h2>
+          <form id="task-form" aria-labelledby="task-form-title" novalidate>
+            <div class="field"><label for="task-title">Kegiatan</label><input id="task-title" type="text" maxlength="100" required placeholder="mis. Kerjakan soal Statistika hal. 42" autocomplete="off"></div>
+            <div class="field"><label for="task-course">Mata kuliah</label><select id="task-course" required><option>Statistika</option><option>Pengantar Akuntansi</option><option>Pemasaran</option><option>Ekonomi Mikro</option><option>Lainnya</option></select></div>
+            <div class="field"><label for="task-date">Tenggat</label><input id="task-date" type="date" required min="2000-01-01" max="9999-12-31"></div>
+            <button class="btn btn-primary btn-block" type="submit"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#plus"></use></svg>Tambah tugas</button>
+            <p class="form-err" id="task-error" role="alert" hidden></p>
+          </form>
+        </div>
+        <div>
+          <div class="week-bar"><h2 id="week-title">Pekan ini</h2><span class="muted small" id="week-range"></span></div>
+          <section class="week-grid" id="week" aria-labelledby="week-title"></section>
+          <section class="task-list" aria-labelledby="task-list-title"><div class="tx-head"><h2 id="task-list-title">Semua tugas</h2><span class="muted small" id="task-count"></span></div><div class="list-body" id="task-rows"></div></section>
+        </div>
+      </div>
+      <noscript><div class="notice">Aktifkan JavaScript untuk menyimpan tugas di perangkat ini.</div></noscript>
+    </main>
+  </div>
+</body>
+</html>

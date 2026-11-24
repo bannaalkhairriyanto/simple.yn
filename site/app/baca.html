@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id" data-gate="pending">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Baca Materi — Simple.yn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
+  <script defer src="/js/config.js"></script>
+  <script defer src="/js/vendor/supabase.min.js"></script>
+  <script defer src="/js/util.js"></script>
+  <script defer src="/js/auth.js"></script>
+  <script defer src="/js/markdown.js"></script>
+  <script defer src="/js/baca.js"></script>
+</head>
+<body>
+  <nav class="nav" aria-label="Navigasi utama"><div class="nav-in"><a class="logo" href="/"><span class="logo-dot" aria-hidden="true"></span>Simple.yn</a><div class="nav-links"><a class="nav-link" href="/">Beranda</a><a class="nav-link" href="/harga.html">Harga</a><a class="nav-link on" href="/app/">Dashboard</a></div><div class="nav-right"><button class="btn btn-outline btn-sm theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Ganti tema"><span aria-hidden="true">◐</span></button><a class="btn btn-outline btn-sm" href="/app/ringkasan.html">Semua materi</a></div></div></nav>
+  <main class="main"><p class="gate-msg notice" role="status"></p>
+    <div class="reader">
+      <div class="reader-top"><a class="btn btn-outline btn-sm" href="/app/ringkasan.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#arrow-l"></use></svg>Kembali</a></div>
+      <div id="summary-meta" class="reader-meta"></div>
+      <article class="reader-body" aria-live="polite"><p class="muted" id="reader-status">Memuat materi…</p><h1 id="summary-title" hidden></h1><div id="markdown"></div><div id="pdf" class="pdf-box" hidden></div></article>
+      <noscript><div class="notice">Aktifkan JavaScript untuk membaca ringkasan materi.</div></noscript>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id" data-gate="pending">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Dashboard — Simple.yn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/theme.js"></script>
+  <script defer src="/js/config.js"></script>
+  <script defer src="/js/vendor/supabase.min.js"></script>
+  <script defer src="/js/util.js"></script>
+  <script defer src="/js/auth.js"></script>
+  <script defer src="/js/dashboard.js"></script>
+</head>
+<body>
+  <nav class="nav" aria-label="Navigasi utama"><div class="nav-in"><a class="logo" href="/"><span class="logo-dot" aria-hidden="true"></span>Simple.yn</a><div class="nav-links"><a class="nav-link" href="/">Beranda</a><a class="nav-link" href="/harga.html">Harga</a><a class="nav-link on" href="/app/">Dashboard</a></div><div class="nav-right"><button class="btn btn-outline btn-sm theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Ganti tema"><span aria-hidden="true">◐</span></button><button class="btn btn-outline btn-sm" id="logout-button" type="button">Keluar</button></div></div></nav>
+  <div class="shell">
+    <aside class="side" aria-label="Navigasi alat">
+      <div class="side-user"><b>Alat belajarmu</b><span class="muted">Tiga alat, satu tempat.</span></div>
+      <div class="side-label">Alat</div>
+      <div class="side-nav">
+        <a class="side-btn" href="/app/keuangan.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#wallet"></use></svg>Money Tracker</a>
+        <a class="side-btn" href="/app/ringkasan.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#book"></use></svg>Ringkasan Materi</a>
+        <a class="side-btn" href="/app/planner.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#cal"></use></svg>Study Planner</a>
+      </div>
+      <div class="side-label">Lainnya</div>
+      <div class="side-nav"><a class="side-btn" href="/harga.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#cart"></use></svg>Lihat harga</a><a class="side-btn" href="/app/admin.html"><svg class="ic" aria-hidden="true"><use href="/img/icons.svg#pen"></use></svg>Kelola materi</a></div>
+    </aside>
+    <main class="main fade-in"><p class="gate-msg notice" role="status"></p>
+      <div class="main-head"><div><h1>Selamat datang di Simple.yn</h1><p id="dashboard-greeting">Pilih alat yang ingin kamu pakai hari ini.</p></div></div>
+      <p class="dash-intro">Catat pengeluaran, atur tugas, dan baca ringkasan materi yang ditulis tim kami — tiga alat dalam satu tempat, tanpa fitur yang tidak kamu pakai.</p>
+      <div class="tools-grid">
+        <a class="tool-card" href="/app/keuangan.html"><div class="tool-head"><div class="tool-ico"><svg class="ic ic-lg" aria-hidden="true"><use href="/img/icons.svg#wallet"></use></svg></div><h2>Money Tracker</h2></div><p>Catat uang masuk dan keluar harian, lihat saldo, dan lihat ke mana uangmu paling banyak pergi lewat grafik kategori sederhana.</p><span class="tool-card-go">Buka Money Tracker <svg class="ic" aria-hidden="true"><use href="/img/icons.svg#arrow-r"></use></svg></span></a>
+        <a class="tool-card" href="/app/ringkasan.html"><div class="tool-head"><div class="tool-ico"><svg class="ic ic-lg" aria-hidden="true"><use href="/img/icons.svg#book"></use></svg></div><h2>Ringkasan Materi</h2></div><p>Ringkasan materi mingguan untuk empat mata kuliah umum, ditulis dan diperbarui oleh tim kami — bukan oleh AI.</p><span class="tool-card-go">Buka ringkasan <svg class="ic" aria-hidden="true"><use href="/img/icons.svg#arrow-r"></use></svg></span></a>
+        <a class="tool-card" href="/app/planner.html"><div class="tool-head"><div class="tool-ico"><svg class="ic ic-lg" aria-hidden="true"><use href="/img/icons.svg#cal"></use></svg></div><h2>Study Planner</h2></div><p>Masukkan tugas beserta tenggatnya, centang yang sudah selesai, dan lihat sebaran tugasmu dalam sepekan.</p><span class="tool-card-go">Buka Study Planner <svg class="ic" aria-hidden="true"><use href="/img/icons.svg#arrow-r"></use></svg></span></a>
+      </div>
+      <div class="notice dash-note"><b>Datamu tersimpan di perangkat ini saja.</b> Catatan Money Tracker dan Study Planner tidak dikirim ke server.</div>
+    </main>
+  </div>
+</body>
+</html>
