@@ -101,6 +101,14 @@ test('deployed pages only link to files that actually exist', () => {
   }
 });
 
+test('a 404 page ships so unknown paths do not answer 200 with the homepage', () => {
+  const notFound = join(site, '404.html');
+  assert.ok(existsSync(notFound), 'site/404.html is required for Cloudflare Pages to return real 404s');
+  const html = readFileSync(notFound, 'utf8');
+  assert.match(html, /<title>[^<]*tidak ditemukan/i);
+  assert.match(html, /href="\/"/);
+});
+
 test('every referenced SVG sprite icon exists', () => {
   const sprite = readFileSync(join(site, 'img', 'icons.svg'), 'utf8');
   const ids = new Set([...sprite.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));

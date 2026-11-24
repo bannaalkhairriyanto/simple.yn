@@ -20,7 +20,9 @@ Simple.yn is a static site (plain HTML/CSS/vanilla JS, no build step) backed by 
 ## Git and deploy
 
 - Remote: `github.com/bannaalkhairriyanto/simple.yn` (**public**), default branch `main`. Because the repo is public, never commit a real secret: the publishable key is fine, `service_role`/PATs/DB passwords are not.
-- Cloudflare Pages uses Git integration: **root directory = repo root**, build command `node --test tests/security.test.mjs`, **build output directory = `site`**, production branch `main`. Never set the output to the repo root.
+- Cloudflare Pages uses Git integration: **root directory = repo root**, build command `node --test tests/security.test.mjs`, **build output directory = `site`**, production branch `main`. Never set the output to the repo root. The live site is `https://simple-yn.pages.dev`.
+- Never deploy this repo through the Workers flow (`npx wrangler deploy`). It guesses an asset directory and picks `demo-backup/`, publishing legacy stubs with no CSP. A `Deploy command`, a generated `wrangler.jsonc`, or a `*.workers.dev` URL means the wrong product was used.
+- `site/404.html` is load-bearing: without it Cloudflare Pages answers `200` with the homepage for every unknown path, so out-of-boundary files look reachable. Verify `404` for `/README.md` and `/supabase/...` after deploy.
 - `site/_headers` ships as-is and Cloudflare Pages honors it. Keep CSP/HSTS there, not only in the dashboard.
 - Deploy only on a green build; the build command runs the security tests, so a broken CSP or inline-script rule fails the deploy.
 

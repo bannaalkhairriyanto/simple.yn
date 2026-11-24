@@ -22,6 +22,7 @@ Catatan Money Tracker dan Study Planner tetap disimpan hanya di perangkat penggu
 - `tests/security.test.mjs` — tes keamanan dan integritas statis (CSP, inline script, tautan rusak, halaman terkunci, origin Supabase).
 - `.github/workflows/ci.yml` — menjalankan tes yang sama pada setiap push dan pull request.
 - `site/_headers` — CSP dan HSTS yang dibaca langsung oleh Cloudflare Pages.
+- `site/404.html` — halaman untuk alamat yang tidak ada. Tanpa berkas ini Cloudflare Pages membalas `200` berisi beranda untuk setiap path salah, sehingga berkas yang seharusnya tidak terbit tampak "ada".
 - `examples/` — dua format materi yang digunakan sebelum migrasi, tidak ikut dipublikasikan.
 - `README.md`, `SECURITY.md`, `demo-backup/` — di luar folder deploy, tidak perlu ikut naik ke hosting.
 
@@ -112,8 +113,8 @@ Perubahan peran akan terlihat saat akses berikutnya diperiksa ke server.
 Halaman `login.html` mengirim `emailRedirectTo` ke `/login.html` pada origin yang sedang dibuka. Supabase hanya mau mengarahkan ke origin yang terdaftar:
 
 1. Buka **Authentication → URL Configuration**.
-2. **Site URL**: origin produksi, misalnya `https://simpleyn.pages.dev` atau domain sendiri. Jangan biarkan `http://localhost:3000` saat rilis.
-3. **Redirect URLs**: tambahkan `https://<domain>/login.html`. Tambahkan juga URL preview `https://<hash>.simpleyn.pages.dev/login.html` bila preview dipakai untuk uji coba.
+2. **Site URL**: origin produksi. Untuk proyek ini `https://simple-yn.pages.dev` (ganti bila memakai domain sendiri). Jangan biarkan `http://localhost:3000` saat rilis.
+3. **Redirect URLs**: tambahkan `https://simple-yn.pages.dev/login.html`. Tambahkan juga URL preview `https://<hash>.simple-yn.pages.dev/login.html` bila preview dipakai untuk uji coba.
 4. Buka **Authentication → Providers → Email**: aktifkan **Confirm email** dan tetapkan **minimum password length 12** agar sama dengan aturan di `auth.js` (12–72 karakter).
 
 **Konfirmasi email wajib punya SMTP sendiri sebelum rilis.** Server email bawaan Supabase hanya untuk uji coba dan sangat cepat kena limit: saat pengujian, email konfirmasi ketiga ditolak dengan `429 too many requests`, sehingga pendaftaran pengguna baru akan gagal. Isi **Authentication → SMTP Settings** dengan penyedia email sebelum mengumumkan situs.
@@ -157,7 +158,7 @@ Untuk nomor WhatsApp dan jalur pembayaran, edit `site/js/config.js`. Satu-satuny
 
 ## Hosting: GitHub → Cloudflare Pages
 
-Repo GitHub: `bannaalkhairriyanto/simple.yn` (publik). Cloudflare Pages terhubung ke repo itu sehingga setiap push ke `main` otomatis deploy.
+Repo GitHub: `bannaalkhairriyanto/simple.yn` (publik). Cloudflare Pages terhubung ke repo itu sehingga setiap push ke `main` otomatis deploy. Situs produksi: **https://simple-yn.pages.dev**
 
 1. Di Cloudflare Dashboard, buka **Workers & Pages → Create → Pages → Connect to Git**, lalu pilih repo.
 2. Isi pengaturan build:
@@ -165,13 +166,23 @@ Repo GitHub: `bannaalkhairriyanto/simple.yn` (publik). Cloudflare Pages terhubun
    - **Root directory**: kosong (root repo)
    - **Build command**: `node --test tests/security.test.mjs`
    - **Build output directory**: `site`
+   - **Environment variable** (opsional): `NODE_VERSION` = `22`
 3. Simpan. Cloudflare Pages hanya menerbitkan isi `site/`; `supabase/`, `examples/`, dokumentasi, dan backup tidak ikut terpublikasi.
 4. Setiap push ke `main` memicu deploy produksi; pull request mendapat preview URL.
 5. `site/_headers` dibaca apa adanya oleh Cloudflare Pages. Jangan menghapus CSP/HSTS dari berkas itu atau memindahkannya hanya ke dashboard. Berkas itu juga menetapkan `Cache-Control: max-age=0, must-revalidate` untuk `/js/*` dan `/css/*` agar perubahan skrip langsung terpakai setelah deploy, bukan tertahan cache browser.
 6. Build command menjalankan tes keamanan; jika tes gagal, deploy dibatalkan. Alur yang sama juga berjalan di GitHub Actions (`.github/workflows/ci.yml`).
 7. Repo bersifat **publik**, jadi jangan pernah commit `.env`, token, atau `service_role`. Publishable key di `site/js/config.js` memang untuk publik; pengamanan sebenarnya ada pada RLS dan fungsi server-side.
 
-Setelah deploy, buka URL `*.pages.dev` lalu periksa header `content-security-policy` dan `strict-transport-security` di tab Network agar yakin `_headers` benar-benar diterapkan.
+> **Jangan memakai alur Workers untuk situs ini.** Form "Import a Git repository" versi Workers menjalankan `npx wrangler deploy` dan menebak folder aset sendiri. Saat dicoba, Wrangler memilih `demo-backup/` sehingga yang terbit hanya tiga halaman stub lama tanpa CSP. Tanda-tandanya: ada isian **Deploy command**, muncul `wrangler.jsonc`, dan URL berakhiran `*.workers.dev`. Hapus Worker seperti itu, lalu buat proyek lewat tab **Pages**.
+
+Setelah deploy, buka URL `*.pages.dev` lalu periksa header `content-security-policy` dan `strict-transport-security` di tab Network agar yakin `_headers` benar-benar diterapkan. Uji juga bahwa path di luar `site/` benar-benar `404`, bukan `200`:
+
+```powershell
+curl.exe -sI https://simple-yn.pages.dev/
+curl.exe -sI https://simple-yn.pages.dev/js/auth.js   # harus ada cache-control: max-age=0, must-revalidate
+curl.exe -s -o NUL -w "%{http_code}`n" https://simple-yn.pages.dev/README.md          # 404
+curl.exe -s -o NUL -w "%{http_code}`n" https://simple-yn.pages.dev/supabase/migrations/001_auth_payments_summaries.sql  # 404
+```
 
 - `site/login.html` harus dapat diakses oleh pendaftar/login.
 - Cloudflare Access pada `/app/*` boleh dipakai sebagai **lapisan tambahan** untuk kelompok kelas, tetapi bukan dasar pemeriksaan pembayaran. Cakupannya tidak boleh menghalangi calon pengguna yang perlu mendaftar; selesaikan alur Access lalu auth Supabase.
