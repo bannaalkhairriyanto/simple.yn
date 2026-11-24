@@ -18,7 +18,7 @@ Catatan Money Tracker dan Study Planner tetap disimpan hanya di perangkat penggu
 - `site/` — berkas frontend yang diterbitkan oleh Cloudflare Pages.
 - `site/js/vendor/supabase.min.js` — klien resmi Supabase untuk browser, disimpan secara lokal beserta lisensinya.
 - `site/js/auth.js` — sesi PKCE, auto-refresh, email/password auth, dan pemeriksaan akses ke server.
-- `supabase/migrations/` — empat migrasi berurutan; `001` berisi tabel, trigger, fungsi RPC, RLS, dan kebijakan Storage, lalu `002`–`004` adalah perbaikan yang wajib ikut diterapkan.
+- `supabase/migrations/` — lima migrasi berurutan; `001` berisi tabel, trigger, fungsi RPC, RLS, dan kebijakan Storage, lalu `002`–`005` adalah perbaikan yang wajib ikut diterapkan.
 - `tests/security.test.mjs` — tes keamanan dan integritas statis (CSP, inline script, tautan rusak, halaman terkunci, origin Supabase).
 - `.github/workflows/ci.yml` — menjalankan tes yang sama pada setiap push dan pull request.
 - `site/_headers` — CSP dan HSTS yang dibaca langsung oleh Cloudflare Pages.
@@ -41,9 +41,12 @@ supabase/migrations/001_auth_payments_summaries.sql
 supabase/migrations/002_pending_purchase_limit.sql
 supabase/migrations/003_harden_grants.sql
 supabase/migrations/004_fix_pending_limit_and_approval.sql
+supabase/migrations/005_fix_handle_new_user_fallback_username.sql
 ```
 
-`001` membuat skema dan kebijakan, `002` membatasi jumlah permintaan `pending`, `003` mencabut izin bawaan Supabase yang terlalu luas, dan `004` memperbaiki dua cacat yang ditemukan lewat uji end-to-end: batas 3 permintaan yang sebelumnya bisa dilewati, serta persetujuan admin yang gagal dengan `permission denied` setelah `003` mencabut izin `UPDATE`. **Jangan lewati `003` dan `004`:** tanpa `003`, pengguna yang login dapat mengubah peran atau status pembayarannya sendiri; tanpa `004`, admin tidak dapat menekan **Tandai dibayar**. Kamu juga dapat menggunakan workflow migrasi `supabase db push` jika Supabase CLI sudah dipasang dan terhubung ke proyek. Migrasi ini akan membuat:
+`001` membuat skema dan kebijakan, `002` membatasi jumlah permintaan `pending`, `003` mencabut izin bawaan Supabase yang terlalu luas, `004` memperbaiki dua cacat yang ditemukan lewat uji end-to-end (batas 3 permintaan yang bisa dilewati, dan persetujuan admin yang gagal `permission denied` setelah `003`), dan `005` membuat trigger `handle_new_user` tidak lagi gagal saat metadata `username` tidak dikirim.
+
+**Jangan lewati `003`, `004`, dan `005`:** tanpa `003`, pengguna yang login dapat mengubah peran atau status pembayarannya sendiri; tanpa `004`, admin tidak dapat menekan **Tandai dibayar**; tanpa `005`, pendaftaran lewat **Authentication → Users → Add user** gagal dengan `500` karena `profiles.username` kosong. Kamu juga dapat menggunakan workflow migrasi `supabase db push` jika Supabase CLI sudah dipasang dan terhubung ke proyek. Migrasi ini akan membuat:
 
 - `profiles`: email, username, dan peran tepercaya (`student` atau `admin`).
 - `plans`: harga serta isi paket yang menjadi acuan pembayaran.

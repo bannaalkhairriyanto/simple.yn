@@ -160,3 +160,35 @@ test('config.js and the CSP agree on one Supabase origin and no secret key', () 
   assert.doesNotMatch(config, /service_role|sb_secret_/);
 });
 
+test('migrations are numbered without gaps so none is skipped on a fresh project', () => {
+  const dir = join(root, 'supabase', 'migrations');
+  const numbers = readdirSync(dir)
+    .filter((name) => name.endsWith('.sql'))
+    .map((name) => name.match(/^(\d{3})_/)?.[1])
+    .filter(Boolean)
+    .map(Number)
+    .sort((a, b) => a - b);
+  assert.ok(numbers.length > 0, 'no migrations found');
+  numbers.forEach((value, index) => {
+    assert.equal(value, index + 1, `migration ${String(index + 1).padStart(3, '0')} is missing`);
+  });
+});
+
+test('handle_new_user always produces a username even without metadata', () => {
+  const dir = join(root, 'supabase', 'migrations');
+  const definitions = readdirSync(dir)
+    .filter((name) => name.endsWith('.sql'))
+    .sort()
+    .flatMap((name) =>
+      [...readFileSync(join(dir, name), 'utf8').matchAll(/create or replace function public\.handle_new_user\(\)[\s\S]*?\$\$;/gi)]
+    );
+  assert.ok(definitions.length > 0, 'handle_new_user is never defined');
+  const latest = definitions.at(-1)[0];
+  // profiles.username is NOT NULL and the trigger shares the auth.users transaction:
+  // a bare metadata read aborts user creation with SQLSTATE 23502.
+  assert.match(latest, /coalesce\(\s*new\.raw_user_meta_data/i);
+  assert.match(latest, /regexp_replace/i);
+  assert.match(latest, /while exists/i);
+  assert.match(latest, /security definer/i);
+});
+
