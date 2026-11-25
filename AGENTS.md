@@ -63,6 +63,8 @@ Simple.yn is a static site (plain HTML/CSS/vanilla JS, no build step) backed by 
 
 ## Gotchas
 
+- `.mt-row` in the Money Tracker sizes itself from a `@container mt-form` query, not a viewport `@media` block. A viewport rule collapsed `Keterangan` to `0px` between roughly `1121` and `1330px` (the chart column narrows the form before the window gets small) and its input overlapped `Nominal`; `tests/security.test.mjs` fails if a `@media` block lays out `.mt-row` again.
+
 - MCP servers are not configured in this repo (no `opencode.json`). Supabase/GitHub tools come from the user's global OpenCode config; do not assume a project-local MCP setup.
 - `tests/security.test.mjs` intentionally skips `site/js/vendor/` (pinned minified Supabase client) and root legacy HTML.
 - HSTS is set in `site/_headers`, so the host must serve HTTPS for it to take effect.
