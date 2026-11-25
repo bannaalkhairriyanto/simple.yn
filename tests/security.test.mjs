@@ -192,3 +192,26 @@ test('handle_new_user always produces a username even without metadata', () => {
   assert.match(latest, /security definer/i);
 });
 
+test('the money form row breaks on its own width, never on the viewport', () => {
+  const css = readFileSync(join(site, 'css', 'style.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  // The chart column narrows the form long before the window gets small, so a
+  // viewport breakpoint collapsed Keterangan to 0px and its input overlapped
+  // Nominal. The row must size itself from the form's own container.
+  assert.match(css, /\.mt-form\s*\{[^}]*container:\s*mt-form\s*\/\s*inline-size/, 'mt-form is not a container');
+  assert.match(css, /@container\s+mt-form\s*\(min-width:\s*\d+px\)/, 'no container query for .mt-row');
+
+  let index = 0;
+  while ((index = css.indexOf('@media', index)) !== -1) {
+    const open = css.indexOf('{', index);
+    let depth = 0;
+    let end = open;
+    for (; end < css.length; end++) {
+      if (css[end] === '{') depth++;
+      else if (css[end] === '}' && --depth === 0) break;
+    }
+    const block = css.slice(open + 1, end);
+    assert.doesNotMatch(block, /\.mt-row\b[^{]*\{[^}]*grid-template-columns/, 'a @media block still lays out .mt-row by viewport');
+    index = end + 1;
+  }
+});
+

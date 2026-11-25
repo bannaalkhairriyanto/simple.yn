@@ -160,9 +160,21 @@
 .stat .val { font-family: 'Fraunces', serif; font-size: 23px; font-weight: 700; }
 .stat .val.in { color: var(--primary); }
 .stat .val.out { color: var(--accent); }
-.mt-form { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 22px; }
+.mt-form { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 22px; container: mt-form / inline-size; }
 .mt-form h2 { font-size: 19px; margin-bottom: 14px; }
-.mt-row { display: grid; grid-template-columns: minmax(90px, 110px) minmax(0, 1fr) minmax(110px, 150px) minmax(120px, 170px) auto; gap: 10px; align-items: end; }
+/* The row follows the form's own width, not the viewport: the chart column narrows
+   the form long before the window gets small, which used to collapse Keterangan to
+   0px and let its input overlap Nominal. Stacked is the safe fallback everywhere. */
+.mt-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: end; }
+@container mt-form (min-width: 420px) {
+  .mt-row { grid-template-columns: minmax(96px, 110px) minmax(140px, 1fr) minmax(120px, 150px); }
+  .mt-row .mt-cat { grid-column: 1 / 2; }
+  .mt-row > .btn { justify-self: start; }
+}
+@container mt-form (min-width: 780px) {
+  .mt-row { grid-template-columns: minmax(96px, 110px) minmax(180px, 1fr) minmax(120px, 150px) minmax(130px, 160px) auto; }
+  .mt-row .mt-cat { grid-column: auto; }
+}
 .tx-list { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
 .tx-head { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border); }
 .tx-head h2 { font-size: 17px; margin: 0; }
@@ -224,8 +236,8 @@
 .list-empty { padding: 22px 18px; color: var(--muted); }
 
 @media (max-width: 1120px) {
-  .mt-row { grid-template-columns: 110px 1fr 150px; }
-  .mt-row .mt-cat { grid-column: 1 / 2; }
+  /* Chart drops under the form so the entry row keeps a usable Keterangan field. */
+  .mt-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 920px) {
   .hero-grid { grid-template-columns: 1fr; gap: 34px; }
@@ -235,7 +247,6 @@
   .bundles { grid-template-columns: 1fr; max-width: 460px; }
   .singles { grid-template-columns: 1fr; }
   .co-grid, .admin-field-row { grid-template-columns: 1fr; }
-  .mt-grid { grid-template-columns: 1fr; }
   .pl-grid { grid-template-columns: 1fr; }
   .shell { grid-template-columns: minmax(0, 1fr); }
   .side { border-right: none; border-bottom: 1px solid var(--border); padding: 14px 16px; min-width: 0; }
@@ -247,15 +258,12 @@
   .sum-grid { grid-template-columns: 1fr 1fr; }
   .admin-payment-list { grid-template-columns: 1fr; }
   .week-grid { grid-template-columns: repeat(2, 1fr); }
-  .mt-row { grid-template-columns: 1fr 1fr; }
-  .mt-row .mt-cat { grid-column: auto; }
 }
 @media (max-width: 560px) {
   .sum-grid { grid-template-columns: 1fr; }
   .week-grid { grid-template-columns: 1fr; }
   .reader-body { padding: 24px 20px; }
   .hero h1 { font-size: 29px; }
-  .mt-row { grid-template-columns: 1fr; }
   .tx { align-items: flex-start; flex-wrap: wrap; }
   .tx-amt { margin-left: 44px; }
   .lib-search { flex-wrap: wrap; }
